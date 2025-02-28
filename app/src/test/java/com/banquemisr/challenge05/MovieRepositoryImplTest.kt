@@ -1,14 +1,14 @@
 package com.banquemisr.challenge05
 
+import com.banquemisr.challenge05.data.local.MovieDao
+import com.banquemisr.challenge05.data.local.MovieDetailEntity
+import com.banquemisr.challenge05.data.local.MovieEntity
+import com.banquemisr.challenge05.data.remote.Api
 import com.banquemisr.challenge05.data.remote.models.GenreDto
 import com.banquemisr.challenge05.data.remote.models.MovieDetailDto
 import com.banquemisr.challenge05.data.remote.models.MovieDto
 import com.banquemisr.challenge05.data.remote.models.MovieResponseDto
 import com.banquemisr.challenge05.data.repo.MovieRepositoryImpl
-import com.banquemisr.challenge05.data.local.MovieDao
-import com.banquemisr.challenge05.data.local.MovieDetailEntity
-import com.banquemisr.challenge05.data.local.MovieEntity
-import com.banquemisr.challenge05.data.remote.Api
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -36,18 +36,21 @@ class MovieRepositoryImplTest {
 
     @Test
     fun `getNowPlayingMovies returns cached data when available and not forced refresh`() = runBlocking {
-        // Given
+
         val cachedMovies = listOf(
             createMovieEntity(1, "now_playing"),
             createMovieEntity(2, "now_playing")
         )
-     //   every { movieDao.getMoviesCountByCategory("now_playing") } returns 2
+
+
+        coEvery { movieDao.getMoviesCountByCategory("now_playing") } returns 2
         every { movieDao.getMoviesByCategory("now_playing") } returns flowOf(cachedMovies)
 
-        // When
+
+
         val result = repository.getNowPlayingMovies(forceRefresh = false).first()
 
-        // Then
+
         assertEquals(2, result.size)
         assertEquals(1, result[0].id)
         assertEquals(2, result[1].id)
@@ -56,7 +59,8 @@ class MovieRepositoryImplTest {
 
     @Test
     fun `getNowPlayingMovies fetches from API when cache is empty`() = runBlocking {
-        // Given
+
+
         val apiMovies = listOf(
             createMovieDto(1),
             createMovieDto(2)
@@ -67,19 +71,20 @@ class MovieRepositoryImplTest {
             totalPages = 1,
             totalResults = 2
         )
-        
-    //   every { movieDao.getMoviesCountByCategory("now_playing") } returns 0
+
+
+        coEvery { movieDao.getMoviesCountByCategory("now_playing") } returns 0
         every { movieDao.getMoviesByCategory("now_playing") } returns flowOf(emptyList())
         coEvery { movieApi.getNowPlayingMovies() } returns apiResponse
-        
-        val insertedMovies =    slot<List<MovieEntity>>()
+
+        val insertedMovies = slot<List<MovieEntity>>()
         coEvery { movieDao.insertMovies(capture(insertedMovies)) } returns Unit
 
-        // When
+
         val result = repository.getNowPlayingMovies(forceRefresh = false).first()
 
-        // Then
-        assertEquals(0, result.size) // Initial emission is empty
+
+        assertEquals(0, result.size)
         coVerify { movieApi.getNowPlayingMovies() }
         coVerify { movieDao.insertMovies(any()) }
         assertEquals(2, insertedMovies.captured.size)
@@ -89,44 +94,47 @@ class MovieRepositoryImplTest {
 
     @Test
     fun `getMovieDetail returns cached data when available and not forced refresh`() = runBlocking {
-        // Given
+
+
         val movieId = 1
         val cachedMovie = createMovieDetailEntity(movieId)
-        
+
         coEvery { movieDao.getMovieById(movieId) } returns createMovieEntity(movieId, "popular")
         every { movieDao.getMovieDetail(movieId) } returns flowOf(cachedMovie)
 
-        // When
+
         val result = repository.getMovieDetail(movieId, forceRefresh = false).first()
 
-        // Then
+
         assertEquals(movieId, result?.id)
         coVerify(exactly = 0) { movieApi.getMovieDetail(movieId) }
     }
 
     @Test
     fun `getMovieDetail fetches from API when cache is empty`() = runBlocking {
-        // Given
+
+
         val movieId = 1
         val apiMovieDetail = createMovieDetailDto(movieId)
-        
+
         coEvery { movieDao.getMovieById(movieId) } returns null
         coEvery { movieApi.getMovieDetail(movieId) } returns apiMovieDetail
         every { movieDao.getMovieDetail(movieId) } returns flowOf(null)
-        
+
         val insertedMovieDetail = slot<MovieDetailEntity>()
         coEvery { movieDao.insertMovieDetail(capture(insertedMovieDetail)) } returns Unit
 
-        // When
+
         repository.getMovieDetail(movieId, forceRefresh = false).first()
 
-        // Then
+
+
         coVerify { movieApi.getMovieDetail(movieId) }
         coVerify { movieDao.insertMovieDetail(any()) }
         assertEquals(movieId, insertedMovieDetail.captured.id)
     }
 
-    // Helper methods to create test data
+
     private fun createMovieEntity(id: Int, category: String) = MovieEntity(
         id = id,
         title = "Movie $id",
