@@ -1,4 +1,4 @@
-package com.banquemisr.challenge05.domainModels
+package com.banquemisr.challenge05.domain.models
 
 data class Movie(
     val id: Int,

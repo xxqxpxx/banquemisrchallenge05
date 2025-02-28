@@ -19,12 +19,12 @@ abstract class MovieDatabase : RoomDatabase() {
 
 class Converters {
     private val gson = Gson()
-    
+
     @TypeConverter
     fun fromGenreList(genres: List<GenreEntity>): String {
         return gson.toJson(genres)
     }
-    
+
     @TypeConverter
     fun toGenreList(genresString: String): List<GenreEntity> {
         val type = object : TypeToken<List<GenreEntity>>() {}.type

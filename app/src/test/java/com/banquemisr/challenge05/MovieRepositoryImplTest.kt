@@ -35,27 +35,27 @@ class MovieRepositoryImplTest {
     }
 
     @Test
-    fun `getNowPlayingMovies returns cached data when available and not forced refresh`() = runBlocking {
+    fun `getNowPlayingMovies returns cached data when available and not forced refresh`() =
+        runBlocking {
 
-        val cachedMovies = listOf(
-            createMovieEntity(1, "now_playing"),
-            createMovieEntity(2, "now_playing")
-        )
-
-
-        coEvery { movieDao.getMoviesCountByCategory("now_playing") } returns 2
-        every { movieDao.getMoviesByCategory("now_playing") } returns flowOf(cachedMovies)
+            val cachedMovies = listOf(
+                createMovieEntity(1, "now_playing"),
+                createMovieEntity(2, "now_playing")
+            )
 
 
+            coEvery { movieDao.getMoviesCountByCategory("now_playing") } returns 2
+            every { movieDao.getMoviesByCategory("now_playing") } returns flowOf(cachedMovies)
 
-        val result = repository.getNowPlayingMovies(forceRefresh = false).first()
+
+            val result = repository.getNowPlayingMovies(forceRefresh = false).first()
 
 
-        assertEquals(2, result.size)
-        assertEquals(1, result[0].id)
-        assertEquals(2, result[1].id)
-        coVerify(exactly = 0) { movieApi.getNowPlayingMovies() }
-    }
+            assertEquals(2, result.size)
+            assertEquals(1, result[0].id)
+            assertEquals(2, result[1].id)
+            coVerify(exactly = 0) { movieApi.getNowPlayingMovies() }
+        }
 
     @Test
     fun `getNowPlayingMovies fetches from API when cache is empty`() = runBlocking {

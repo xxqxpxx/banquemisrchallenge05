@@ -1,7 +1,7 @@
-package com.banquemisr.challenge05.data.repo
+package com.banquemisr.challenge05.domain.repo
 
-import com.banquemisr.challenge05.domainModels.Movie
-import com.banquemisr.challenge05.domainModels.MovieDetail
+import com.banquemisr.challenge05.domain.models.Movie
+import com.banquemisr.challenge05.domain.models.MovieDetail
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {

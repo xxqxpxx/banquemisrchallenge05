@@ -1,15 +1,16 @@
 package com.banquemisr.challenge05.data.repo
 
-import com.banquemisr.challenge05.data.remote.Api
-import com.banquemisr.challenge05.data.remote.models.GenreDto
-import com.banquemisr.challenge05.data.remote.models.MovieDetailDto
-import com.banquemisr.challenge05.data.remote.models.MovieDto
 import com.banquemisr.challenge05.data.local.GenreEntity
 import com.banquemisr.challenge05.data.local.MovieDao
 import com.banquemisr.challenge05.data.local.MovieDetailEntity
 import com.banquemisr.challenge05.data.local.MovieEntity
-import com.banquemisr.challenge05.domainModels.Movie
-import com.banquemisr.challenge05.domainModels.MovieDetail
+import com.banquemisr.challenge05.data.remote.Api
+import com.banquemisr.challenge05.data.remote.models.GenreDto
+import com.banquemisr.challenge05.data.remote.models.MovieDetailDto
+import com.banquemisr.challenge05.data.remote.models.MovieDto
+import com.banquemisr.challenge05.domain.models.Movie
+import com.banquemisr.challenge05.domain.models.MovieDetail
+import com.banquemisr.challenge05.domain.repo.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -43,7 +44,7 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getMovieDetail(movieId: Int, forceRefresh: Boolean): Flow<MovieDetail?> {
         // Check if data should be refreshed
         val shouldFetch = forceRefresh || movieDao.getMovieById(movieId) == null
-        
+
         if (shouldFetch) {
             try {
                 val remoteMovie = movieApi.getMovieDetail(movieId)
@@ -52,7 +53,7 @@ class MovieRepositoryImpl @Inject constructor(
                 // Error fetching from remote, we'll try to use cache if available
             }
         }
-        
+
         return movieDao.getMovieDetail(movieId).map { movieDetailEntity ->
             movieDetailEntity?.toMovieDetail()
         }
@@ -65,7 +66,7 @@ class MovieRepositoryImpl @Inject constructor(
     ): Flow<List<Movie>> {
         // Check if we should fetch fresh data
         val shouldFetch = forceRefresh || movieDao.getMoviesCountByCategory(category) == 0
-        
+
         if (shouldFetch) {
             try {
                 val remoteMovies = fetchFromRemote()
@@ -75,7 +76,7 @@ class MovieRepositoryImpl @Inject constructor(
                 // Error fetching from remote, we'll try to use cache if available
             }
         }
-        
+
         return movieDao.getMoviesByCategory(category).map { movieEntities ->
             movieEntities.map { it.toMovie() }
         }
