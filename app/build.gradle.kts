@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+  //  alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
 }
 
@@ -15,25 +17,53 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+
+        multiDexEnabled = false
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "API_KEY", "\"API_KEY\"")
+
+
+
+        /*
+        eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNTBhNGI1NGVhMzdjNThkZjI1YjcyMzQyZjljMmNkYiIsIm5iZiI6MTc0MDc4MzEzMi4zMjQsInN1YiI6IjY3YzIzZTFjMWYzZjgxYjYwN2EyNGQyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.w4zPNQ2NkTgDYUNh95La2d7B48pXjcWcWha4Y9subu0
+
+         */
+        buildConfigField("String", "API_KEY", "\"e50a4b54ea37c58df25b72342f9c2cdb\"")
         buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
         buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w500\"")
     }
 
     buildTypes {
+
+
+
         release {
             isMinifyEnabled = false
+            //setABIs(true) // Include x86 ABIs for debug builds
+            //setABIs(hasx86 = true)
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+
+        debug {
+            //setABIs(true) // Include x86 ABIs for debug builds
+            isDebuggable = true
+            isMinifyEnabled = false
+        }
     }
+
+    configurations.implementation{
+        exclude(group = "com.intellij", module = "annotations")
+    }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -60,8 +90,21 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // Handle the annotation processor conflict
+            pickFirsts += "META-INF/gradle/incremental.annotation.processors"
+            // Additional common conflicts to handle
+            pickFirsts += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/LICENSE.md"
+            pickFirsts += "META-INF/LICENSE-notice.md"
+            pickFirsts += "META-INF/LICENSE.txt"
+            pickFirsts += "META-INF/NOTICE.txt"
+            pickFirsts += "META-INF/NOTICE"
+            pickFirsts += "META-INF/LICENSE"
+            // Exclude kotlin module info
+            excludes += "META-INF/*.kotlin_module"
         }
     }
+
 
     testOptions {
         unitTests {
@@ -122,4 +165,7 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("com.android.support:multidex:1.0.3")
+
 }
