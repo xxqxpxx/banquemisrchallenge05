@@ -6,13 +6,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.banquemisr.challenge05.presentation.movielist.MovieListScreen
+import com.banquemisr.challenge05.presentation.movies.moviedetails.MovieDetailScreen
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListScreen
 
 
 @Composable
 fun NavGraph() {
     val navController = rememberNavController()
-    
+
     NavHost(
         navController = navController,
         startDestination = Screen.MovieList.route
@@ -24,8 +25,8 @@ fun NavGraph() {
                 }
             )
         }
-        
-   /*     composable(
+
+        composable(
             route = Screen.MovieDetail.route + "/{movieId}",
             arguments = listOf(
                 navArgument("movieId") {
@@ -38,7 +39,7 @@ fun NavGraph() {
                     navController.popBackStack()
                 }
             )
-        }*/
+        }
     }
 }
 

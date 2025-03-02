@@ -1,15 +1,26 @@
-package com.banquemisr.challenge05.presentation.movielist
+package com.banquemisr.challenge05.presentation.movies.movielist
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.*
-
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,16 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.banquemisr.challenge05.BuildConfig
 import com.banquemisr.challenge05.R
-
 import com.banquemisr.challenge05.domain.models.Movie
 import com.banquemisr.challenge05.presentation.common.ErrorView
 import com.banquemisr.challenge05.presentation.common.LoadingView
 import com.banquemisr.challenge05.presentation.common.MovieItem
-import com.banquemisr.challenge05.presentation.movielist.MovieListContract.Effect
-import com.banquemisr.challenge05.presentation.movielist.MovieListContract.Event
-import com.banquemisr.challenge05.presentation.movielist.MovieListContract.Tab
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListContract.Effect
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListContract.Event
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListContract.Tab
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -42,7 +51,7 @@ fun MovieListScreen(
     val state by viewModel.state.collectAsState()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    
+
     // Handle UI effects
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
@@ -50,6 +59,7 @@ fun MovieListScreen(
                 is Effect.NavigateToMovieDetail -> {
                     onNavigateToMovieDetail(effect.movieId)
                 }
+
                 is Effect.ShowSnackbar -> {
                     scope.launch {
                         scaffoldState.snackbarHostState.showSnackbar(
@@ -60,9 +70,9 @@ fun MovieListScreen(
             }
         }
     }
-    
+
     Scaffold(
-      //  scaffoldState = scaffoldState,
+        //  scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
@@ -102,13 +112,14 @@ fun MovieListScreen(
                     text = { Text("Upcoming") }
                 )
             }
-            
+
             // Content based on selected tab
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     state.isLoading() -> {
                         LoadingView(modifier = Modifier.align(Alignment.Center))
                     }
+
                     state.getCurrentError() != null -> {
                         ErrorView(
                             message = state.getCurrentError() ?: "Unknown error",
@@ -118,6 +129,7 @@ fun MovieListScreen(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
+
                     else -> {
                         MovieContent(
                             movies = state.getCurrentMovies(),
@@ -140,7 +152,6 @@ fun MovieContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
         if (movies.isEmpty()) {
@@ -150,17 +161,19 @@ fun MovieContent(
             ) {
                 Text(
                     text = "No movies available",
-                    style =  MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium
                 )
             }
         } else {
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(280.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(movies) { movie ->
+                items(movies.size) { index ->
+                    val movie = movies[index]
                     MovieItem(
                         movie = movie,
                         onClick = { onMovieClick(movie.id) }

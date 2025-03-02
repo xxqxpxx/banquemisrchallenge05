@@ -18,7 +18,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    
     @Provides
     @Singleton
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
@@ -30,7 +29,7 @@ object NetworkModule {
             }
         }
     }
-    
+
     @Provides
     @Singleton
     fun provideOkHttpClient(
@@ -40,12 +39,21 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val requestBuilder = original.newBuilder()
+                    .header("Authorization", BuildConfig.AUTH_TOKEN)
+                    .header("accept", "application/json")
+                    .method(original.method, original.body)
+
+                chain.proceed(requestBuilder.build())
+            }
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
-    
+
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
@@ -55,7 +63,7 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-    
+
     @Provides
     @Singleton
     fun provideMovieApi(retrofit: Retrofit): Api {

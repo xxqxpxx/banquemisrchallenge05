@@ -17,34 +17,21 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-
-        multiDexEnabled = false
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-
-
-
-
-        /*
-        eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNTBhNGI1NGVhMzdjNThkZjI1YjcyMzQyZjljMmNkYiIsIm5iZiI6MTc0MDc4MzEzMi4zMjQsInN1YiI6IjY3YzIzZTFjMWYzZjgxYjYwN2EyNGQyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.w4zPNQ2NkTgDYUNh95La2d7B48pXjcWcWha4Y9subu0
-
-         */
-        buildConfigField("String", "API_KEY", "\"e50a4b54ea37c58df25b72342f9c2cdb\"")
-        buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
-        buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w500\"")
     }
 
     buildTypes {
-
-
-
         release {
+            isDebuggable = true
             isMinifyEnabled = false
-            //setABIs(true) // Include x86 ABIs for debug builds
-            //setABIs(hasx86 = true)
+
+            buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w500\"")
+            buildConfigField("String", "AUTH_TOKEN", "\"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNTBhNGI1NGVhMzdjNThkZjI1YjcyMzQyZjljMmNkYiIsIm5iZiI6MTc0MDc4MzEzMi4zMjQsInN1YiI6IjY3YzIzZTFjMWYzZjgxYjYwN2EyNGQyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.w4zPNQ2NkTgDYUNh95La2d7B48pXjcWcWha4Y9subu0\"")
+
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -53,9 +40,12 @@ android {
         }
 
         debug {
-            //setABIs(true) // Include x86 ABIs for debug builds
             isDebuggable = true
             isMinifyEnabled = false
+
+            buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w500\"")
+            buildConfigField("String", "AUTH_TOKEN", "\"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNTBhNGI1NGVhMzdjNThkZjI1YjcyMzQyZjljMmNkYiIsIm5iZiI6MTc0MDc4MzEzMi4zMjQsInN1YiI6IjY3YzIzZTFjMWYzZjgxYjYwN2EyNGQyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.w4zPNQ2NkTgDYUNh95La2d7B48pXjcWcWha4Y9subu0\"")
         }
     }
 
@@ -148,7 +138,9 @@ dependencies {
 
     // Room
     implementation(libs.bundles.room)
-    implementation(libs.room.compiler)
+    implementation(libs.bundles.room)
+    ksp(libs.room.compiler)
+
     // Coroutines
     implementation(libs.bundles.coroutines)
 
@@ -165,7 +157,4 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    implementation("com.android.support:multidex:1.0.3")
-
 }

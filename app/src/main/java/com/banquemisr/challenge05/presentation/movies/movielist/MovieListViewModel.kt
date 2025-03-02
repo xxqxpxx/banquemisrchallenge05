@@ -1,13 +1,13 @@
-package com.banquemisr.challenge05.presentation.movielist
+package com.banquemisr.challenge05.presentation.movies.movielist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.banquemisr.challenge05.domain.usecase.GetNowPlayingMoviesUseCase
 import com.banquemisr.challenge05.domain.usecase.GetPopularMoviesUseCase
 import com.banquemisr.challenge05.domain.usecase.GetUpcomingMoviesUseCase
-import com.banquemisr.challenge05.presentation.movielist.MovieListContract.Effect
-import com.banquemisr.challenge05.presentation.movielist.MovieListContract.Event
-import com.banquemisr.challenge05.presentation.movielist.MovieListContract.Tab
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListContract.Effect
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListContract.Event
+import com.banquemisr.challenge05.presentation.movies.movielist.MovieListContract.Tab
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,20 +83,20 @@ class MovieListViewModel @Inject constructor(
             _state.update { it.copy(nowPlayingIsLoading = true, nowPlayingError = null) }
 
             getNowPlayingMoviesUseCase(forceRefresh).onEach { movies ->
-                    _state.update {
-                        it.copy(
-                            nowPlayingMovies = movies, nowPlayingIsLoading = false
-                        )
-                    }
-                }.catch { exception ->
-                    _state.update {
-                        it.copy(
-                            nowPlayingIsLoading = false,
-                            nowPlayingError = exception.message ?: "An error occurred"
-                        )
-                    }
-                    _effect.emit(Effect.ShowSnackbar("Failed to load Now Playing movies"))
-                }.launchIn(this)
+                _state.update {
+                    it.copy(
+                        nowPlayingMovies = movies, nowPlayingIsLoading = false
+                    )
+                }
+            }.catch { exception ->
+                _state.update {
+                    it.copy(
+                        nowPlayingIsLoading = false,
+                        nowPlayingError = exception.message ?: "An error occurred"
+                    )
+                }
+                _effect.emit(Effect.ShowSnackbar("Failed to load Now Playing movies"))
+            }.launchIn(this)
         }
     }
 
@@ -105,16 +105,16 @@ class MovieListViewModel @Inject constructor(
             _state.update { it.copy(popularIsLoading = true, popularError = null) }
 
             getPopularMoviesUseCase(forceRefresh).onEach { movies ->
-                    _state.update { it.copy(popularMovies = movies, popularIsLoading = false) }
-                }.catch { exception ->
-                    _state.update {
-                        it.copy(
-                            popularIsLoading = false,
-                            popularError = exception.message ?: "An error occurred"
-                        )
-                    }
-                    _effect.emit(Effect.ShowSnackbar("Failed to load Popular movies"))
-                }.launchIn(this)
+                _state.update { it.copy(popularMovies = movies, popularIsLoading = false) }
+            }.catch { exception ->
+                _state.update {
+                    it.copy(
+                        popularIsLoading = false,
+                        popularError = exception.message ?: "An error occurred"
+                    )
+                }
+                _effect.emit(Effect.ShowSnackbar("Failed to load Popular movies"))
+            }.launchIn(this)
         }
     }
 
@@ -123,16 +123,16 @@ class MovieListViewModel @Inject constructor(
             _state.update { it.copy(upcomingIsLoading = true, upcomingError = null) }
 
             getUpcomingMoviesUseCase(forceRefresh).onEach { movies ->
-                    _state.update { it.copy(upcomingMovies = movies, upcomingIsLoading = false) }
-                }.catch { exception ->
-                    _state.update {
-                        it.copy(
-                            upcomingIsLoading = false,
-                            upcomingError = exception.message ?: "An error occurred"
-                        )
-                    }
-                    _effect.emit(Effect.ShowSnackbar("Failed to load Upcoming movies"))
-                }.launchIn(this)
+                _state.update { it.copy(upcomingMovies = movies, upcomingIsLoading = false) }
+            }.catch { exception ->
+                _state.update {
+                    it.copy(
+                        upcomingIsLoading = false,
+                        upcomingError = exception.message ?: "An error occurred"
+                    )
+                }
+                _effect.emit(Effect.ShowSnackbar("Failed to load Upcoming movies"))
+            }.launchIn(this)
         }
     }
 }

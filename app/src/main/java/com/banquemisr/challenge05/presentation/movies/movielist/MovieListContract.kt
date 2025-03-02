@@ -1,4 +1,4 @@
-package com.banquemisr.challenge05.presentation.movielist
+package com.banquemisr.challenge05.presentation.movies.movielist
 
 import com.banquemisr.challenge05.domain.models.Movie
 
