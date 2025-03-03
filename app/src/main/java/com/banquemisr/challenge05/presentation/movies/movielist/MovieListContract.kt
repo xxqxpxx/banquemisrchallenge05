@@ -1,5 +1,6 @@
 package com.banquemisr.challenge05.presentation.movies.movielist
 
+import androidx.compose.runtime.Stable
 import com.banquemisr.challenge05.domain.models.Movie
 
 
@@ -11,6 +12,7 @@ class MovieListContract {
     /**
      * UI State representing the current state of the movie list screen
      */
+    @Stable
     data class State(
         val nowPlayingMovies: List<Movie> = emptyList(),
         val popularMovies: List<Movie> = emptyList(),

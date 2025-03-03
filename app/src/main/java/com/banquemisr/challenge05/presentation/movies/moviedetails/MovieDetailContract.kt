@@ -1,9 +1,11 @@
 package com.banquemisr.challenge05.presentation.movies.moviedetails
 
+import androidx.compose.runtime.Stable
 import com.banquemisr.challenge05.domain.models.MovieDetail
 
 class MovieDetailContract {
 
+    @Stable
     data class State(
         val movieDetail: MovieDetail? = null,
         val isLoading: Boolean = false,
