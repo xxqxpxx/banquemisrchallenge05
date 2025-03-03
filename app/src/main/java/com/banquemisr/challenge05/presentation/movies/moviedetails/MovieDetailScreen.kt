@@ -67,6 +67,7 @@ fun MovieDetailScreen(
     }
 
     Scaffold(
+        modifier = Modifier.statusBarsPadding(),
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
